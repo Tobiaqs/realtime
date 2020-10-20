@@ -3,4 +3,4 @@ set -e
 while ! pg_isready -h db; do sleep 2; done
 cd /backend
 /entrypoint.sh ./manage.py db upgrade
-/entrypoint.sh ./manage.py runserver
+exec /entrypoint.sh ./manage.py runserver

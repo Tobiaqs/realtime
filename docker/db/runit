@@ -1,3 +1,3 @@
 #!/bin/sh
 /usr/sbin/sshd
-docker-entrypoint.sh postgres
+exec docker-entrypoint.sh postgres
