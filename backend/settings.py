@@ -16,6 +16,7 @@ class Settings(object):
     DEBUG = os.environ.get('CY_DEBUG')
     CSRF_ENABLED = True
     SECRET_KEY = os.environ.get('CY_SECRET_KEY')
-    SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://' + os.environ.get('CY_DB_USER') + '@' + \
+    SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://' + os.environ.get('CY_DB_USER') + ':' + \
+                              os.environ.get('CY_DB_PASSWORD', '') + '@' + \
                               os.environ.get('CY_DB_HOST', '') + '/' + os.environ.get('CY_DB_NAME')
     FRONTEND_SETTINGS = FRONTEND_SETTINGS
