@@ -7,8 +7,9 @@ import os as _os
 import jwt as _jwt
 import requests as _requests
 import copy as _copy
+import urllib
 from datetime import datetime, timedelta
-from .models import Entry, User, Ticket, Collection
+from .models import Entry, User, Ticket, Collection, Project
 from settings import Settings
 
 
@@ -49,7 +50,7 @@ class Controller():
 
         authorized = self.check_auth()
         if self.body['type'] == 'bootstrap':
-            return self.get_bootstrap()
+            return self.get_bootstrap() # not interesting
         if not authorized:
             return self.error('unauthorized')
 
@@ -307,13 +308,15 @@ class Controller():
 
         print(_os.environ.get('CY_PHABRICATOR_URL') + '/oauthserver/token/')
 
-        r1 = _requests.post(_os.environ.get('CY_PHABRICATOR_URL') + '/oauthserver/token/', params=data)
+        fake_hostname = urllib.parse.urlparse(_os.environ.get('CY_FRONTEND_PHABRICATOR_URL')).hostname
+        r1 = _requests.post(_os.environ.get('CY_PHABRICATOR_URL') + '/oauthserver/token/', params=data, headers={'Host': fake_hostname})
 
         if r1.status_code != 200:
             return self.error(r1.json()['error_description'])
 
         token = r1.json()['access_token']
-        r2 = _requests.get(_os.environ.get('CY_PHABRICATOR_URL') + '/api/user.whoami', params={'access_token': token})
+        r2 = _requests.get(_os.environ.get('CY_PHABRICATOR_URL') + '/api/user.whoami', params={'access_token': token}, headers={'Host': fake_hostname})
+
         res = r2.json()['result']
         user = self.db.session.query(User).filter(User.email == res['primaryEmail']).first()
 
